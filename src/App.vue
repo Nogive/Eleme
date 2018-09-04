@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <mmheader></mmheader>
+    <mmheader :seller="seller"></mmheader>
     <div class="tab border-1px">
       <div class="tab-item">
         <router-link to="/goods">商品</router-link>
@@ -18,14 +18,23 @@
 
 <script>
 import mmheader from "./components/header/Header.vue"
+const ERR_OK=0;
 export default {
   name: 'App',
   components:{
     mmheader
   },
-  mounted(){
-    this.$axios('/api/seller').then(res=>{
-      console.log(res);
+  data(){
+    return {
+      seller:{}
+    }
+  },
+  created(){
+    this.$axios.get('/api/seller').then(res=>{
+      let data=res.data;
+      if(data.code===ERR_OK){
+        this.seller=data.data;
+      }
     })
   }
 }
