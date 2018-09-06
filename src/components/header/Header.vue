@@ -13,27 +13,64 @@
           {{seller.description}}/{{seller.deliveryTime}}分钟送达
         </div>
         <div v-if="seller.supports" class="support">
-          <span class="icon" :class="seller.supports[0].type|classMap(1)"></span>
+          <span class="icon" :class="seller.supports[0].type|classMap()"></span>
           <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
+      <div v-if="seller.supports" class="support-count" @click="showDetail">
+        <span class="count">{{seller.supports.length}}个</span>
+        <i class="icon-keyboard_arrow_right"></i>
+      </div>
     </div>
-    <div class="bulletin-wrapper"></div>
+    <div class="bulletin-wrapper" @click="showDetail">
+      <span class="bulletin-title"></span>
+      <span class="bulletin-text">{{seller.bulletin}}</span>
+      <i class="icon-keyboard_arrow_right"></i>
+    </div>
+    <div class="background">
+      <img :src="seller.avatar" width="100%" height="100%" alt="">
+    </div>
+    <div v-show="detailShow" class="detail">
+      <div class="detail-wrapper clearfix">
+        <div class="detail-main">
+          <h1 class="name">{{seller.name}}</h1>
+          <div class="star-wrapper">
+            <star :size="48" :score="seller.score"></star>
+          </div>
+          <div class="title">
+            <div class="line border-1px"></div>
+            <div class="text">优惠信息</div>
+            <div class="line border-1px"></div>
+          </div>
+        </div>
+      </div>
+      <div class="detail-close">
+        <i class="icon-close" @click="hideDetail"></i>
+      </div>
+    </div>
   </div>
 </template>
 <script>
+import star from "@/components/star/star";
 export default {
-  props:['seller'],
+  props:{
+    seller:{
+      type:Object
+    }
+  },
   data(){
     return {
-      classMap:[]
+      detailShow:true
     }
   },
   created(){
     //this.classMap=["decrease","discount","special","invoice","guarantee"];
   },
+  components:{
+    star
+  },
   filters:{
-    classMap:function(v,param){
+    classMap:function(v){
       var result="decrease";
       switch(v){
         case 1:result="discount";
@@ -47,126 +84,175 @@ export default {
         default:result="decrease";
           break;
       }
-      return result+param;
+      return result;
+    }
+  },
+  methods:{
+    showDetail(){
+      this.detailShow=true;
+    },
+    hideDetail(){
+      this.detailShow=false;
     }
   }
 }
 </script>
-<style>
-.header{
-  color: #ffffff;
-  background: rgba(0,0,0,1);
-}
-.content-wrapper{
-  padding: 24px 12px 18px 24px;
-  font-size: 0;
-}
-.avatar{
-  display: inline-block;
-  vertical-align: top;
-}
-.avatar img{
-  border-radius: 2px;
-}
-.content{
-  display: inline-block;
-  margin-left: 16px;
-}
-.title{
-  margin: 2px 0 8px 0;
-}
-.brand{
-  width: 30px;
-  height: 18px;
-  display: inline-block;
-  background: url("./images/brand@2x.png") no-repeat center center /cover;
-  vertical-align: top;
-}
-.name{
-  font-size: 16px;
-  margin-left: 6px;
-  line-height: 18px;
-  font-weight: bold;
-}
-.description{
-  margin-bottom: 10px;
-  line-height: 12px;
-  font-size: 12px;
-}
-.support .icon{
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  margin-right: 4px;
-  vertical-align: top;
-}
-.support .text{
-  line-height: 12px;
-  font-size: 12px;
-}
-
-/* 减 折 保 票 特 */
-.decrease1{
-  background: url(./images/decrease_1@2x.png) no-repeat center center /cover;
-}
-.decrease2{
-  background: url(./images/decrease_2@2x.png) no-repeat center center /cover;
-}
-.decrease3{
-  background: url(./images/decrease_3@2x.png) no-repeat center center /cover;
-}
-.decrease4{
-  background: url(./images/decrease_4@2x.png) no-repeat center center /cover;
-}
-.discount1{
-  background: url(./images/discount_1@2x.png) no-repeat center center /cover;
-}
-.discount2{
-  background: url(./images/discount_2@2x.png) no-repeat center center /cover;
-}
-.discount3{
-  background: url(./images/discount_3@2x.png) no-repeat center center /cover;
-}
-.discount4{
-  background: url(./images/discount_4@2x.png) no-repeat center center /cover;
-}
-.guarantee1{
-  background: url(./images/guarantee_1@2x.png) no-repeat center center /cover;
-}
-.guarantee2{
-  background: url(./images/guarantee_2@2x.png) no-repeat center center /cover;
-}
-.guarantee3{
-  background: url(./images/guarantee_3@2x.png) no-repeat center center /cover;
-}
-.guarantee4{
-  background: url(./images/guarantee_4@2x.png) no-repeat center center /cover;
-}
-.invoice1{
-  background: url(./images/invoice_1@2x.png) no-repeat center center /cover;
-}
-.invoice2{
-  background: url(./images/invoice_2@2x.png) no-repeat center center /cover;
-}
-.invoice3{
-  background: url(./images/invoice_3@2x.png) no-repeat center center /cover;
-}
-.invoice4{
-  background: url(./images/invoice_4@2x.png) no-repeat center center /cover;
-}
-.special1{
-  background: url(./images/special_1@2x.png) no-repeat center center /cover;
-}
-.special2{
-  background: url(./images/special_2@2x.png) no-repeat center center /cover;
-}
-.special3{
-  background: url(./images/special_3@2x.png) no-repeat center center /cover;
-}
-.special4{
-  background: url(./images/special_4@2x.png) no-repeat center center /cover;
-}
-
+<style lang="stylus">
+@import "../../common/stylus/mixin"
+.header
+  color: #ffffff
+  position: relative
+  overflow hidden
+  background: rgba(1,17,27,.5)
+  .background
+    position: absolute
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    z-index: -1
+    filter: blur(10px)
+  .content-wrapper
+    padding: 24px 12px 18px 24px
+    font-size: 0
+    position: relative
+    .avatar 
+      display: inline-block
+      vertical-align: top
+      img 
+        border-radius: 2px
+    .content
+      display: inline-block
+      margin-left: 16px
+      .title
+        margin: 2px 0 8px 0
+        .brand
+          width: 30px
+          height: 18px
+          display: inline-block
+          bg-image('brand')
+          background-size:30px 18px
+          background-repeat:no-repeat
+          vertical-align: top
+        .name
+          font-size: 16px
+          margin-left: 6px
+          line-height: 18px
+          font-weight: bold
+      .description
+        margin-bottom: 10px
+        line-height: 12px
+        font-size: 12px
+      .support
+        .icon
+          display: inline-block
+          width: 12px
+          height: 12px
+          margin-right: 4px
+          vertical-align: top
+          background-size:12px 12px
+          background-repeat no-repeat
+          &.decrease
+            bg-image('decrease_1')
+          &.discount
+            bg-image('discount_1')
+          &.guarantee
+            bg-image('guarantee_1')
+          &.invoice
+            bg-image('invoice_1')
+          &.special
+            bg-image('special_1')
+        .text
+          line-height: 12px
+          font-size: 10px
+    .support-count
+      position: absolute
+      right: 12px
+      bottom: 14px
+      padding: 0 8px
+      height: 24px
+      line-height: 24px
+      border-radius: 14px
+      background: rgba(0,0,0,.2)
+      text-align: center
+      .count
+        font-size: 10px
+        vertical-align: top
+      .icon-keyboard_arrow_right
+        font-size: 10px
+        line-height: 24px
+        margin-left: 2px
+  .bulletin-wrapper
+    height: 28px
+    line-height: 28px
+    padding: 0 22px 0 12px
+    white-space: nowrap
+    overflow: hidden
+    text-overflow: ellipsis
+    position: relative
+    background: rgba(7,17,27,.2)
+    .bulletin-title
+      display: inline-block
+      width: 22px
+      height: 12px
+      background-size 22px 12px
+      background-repeat no-repeat
+      bg-image("bulletin")
+      vertical-align: top
+      margin-top: 8px
+    .bulletin-text
+      font-size: 10px
+      font-weight: 200
+      margin: 0 4px
+      vertical-align: top
+    .icon-keyboard_arrow_right
+      position: absolute
+      font-size: 10px
+      right: 12px
+      top: 8px
+  .detail
+    position fixed
+    z-index 100
+    top 0
+    left 0
+    width 100%
+    height 100%
+    overflow auto
+    background rgba(7,17,27,.8)
+    .detail-wrapper
+      min-height 100%
+      width 100%
+      .detail-main
+        margin-top 64px
+        padding-bottom 64px
+        .name
+          line-height 16px
+          text-align center
+          font-size 16px
+          font-weight 700
+        .star-wrapper
+          margin-top 18px
+          padding 2px 0
+          text-align center
+        .title
+          display flex
+          width 80%
+          margin 30px auto 24px auto
+          .line
+            flex 1
+            position relative
+            top -6px
+            border-1px(rgba(255,255,255,.2))
+          .text
+            padding 0 12px
+            font-size 14px
+    .detail-close
+      position relative
+      width 32px
+      height 32px
+      margin -64px auto 0 auto
+      clear both
+      font-size 32
 
 </style>
 
