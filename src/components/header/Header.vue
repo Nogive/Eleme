@@ -6,14 +6,14 @@
       </div>
       <div class="content">
         <div class="title">
-          <span class="brand"></span>
+          <bg-icon width="30" height="18" type="5"></bg-icon>
           <span class="name">{{seller.name}}</span>
         </div>
         <div class="description">
           {{seller.description}}/{{seller.deliveryTime}}分钟送达
         </div>
         <div v-if="seller.supports" class="support">
-          <span class="icon" :class="seller.supports[0].type|classMap()"></span>
+          <bg-icon class="icon" width="12" height="12" flag="1" :type="seller.supports[0].type"></bg-icon>
           <span class="text">{{seller.supports[0].description}}</span>
         </div>
       </div>
@@ -45,7 +45,7 @@
             </div>
             <ul class="supports" v-if="seller.supports">
               <li class="suppprt-item" v-for="(item,index) in seller.supports" :key="index">
-                <span class="icon" :class="item.type | classMap"></span>
+                <bg-icon class="icon" width="16" height="16" flag="2" :type="item.type"></bg-icon>
                 <span class="text">{{item.description}}</span>
               </li>
             </ul>
@@ -68,6 +68,7 @@
 </template>
 <script>
 import star from "@/components/star/star";
+import bgIcon from "@/components/bgIcon/bgIcon"
 export default {
   props:{
     seller:{
@@ -83,25 +84,8 @@ export default {
     //this.classMap=["decrease","discount","special","invoice","guarantee"];
   },
   components:{
-    star
-  },
-  filters:{
-    classMap:function(v){
-      var result="decrease";
-      switch(v){
-        case 1:result="discount";
-          break;
-        case 2:result="special";
-          break;
-        case 3:result="invoice";
-          break;
-        case 4:result="guarantee";
-          break;
-        default:result="decrease";
-          break;
-      }
-      return result;
-    }
+    star,
+    bgIcon
   },
   methods:{
     showDetail(){
@@ -142,14 +126,6 @@ export default {
       margin-left: 16px
       .title
         margin: 2px 0 8px 0
-        .brand
-          width: 30px
-          height: 18px
-          display: inline-block
-          bg-image('brand')
-          background-size:30px 18px
-          background-repeat:no-repeat
-          vertical-align: top
         .name
           font-size: 16px
           margin-left: 6px
@@ -161,23 +137,7 @@ export default {
         font-size: 12px
       .support
         .icon
-          display: inline-block
-          width: 12px
-          height: 12px
           margin-right: 4px
-          vertical-align: top
-          background-size:12px 12px
-          background-repeat no-repeat
-          &.decrease
-            bg-image('decrease_1')
-          &.discount
-            bg-image('discount_1')
-          &.guarantee
-            bg-image('guarantee_1')
-          &.invoice
-            bg-image('invoice_1')
-          &.special
-            bg-image('special_1')
         .text
           line-height: 12px
           font-size: 10px
@@ -279,23 +239,7 @@ export default {
             &:last-child
               margin-bottom 0
             .icon
-              display inline-block
-              width 16px
-              height 16px
-              vertical-align top 
               margin-right 16px
-              background-size 16px 16px
-              background-repeat no-repeat
-              &.decrease
-                bg-image('decrease_2')
-              &.discount
-                bg-image('discount_2')
-              &.guarantee
-                bg-image('guarantee_2')
-              &.invoice
-                bg-image('invoice_2')
-              &.special
-                bg-image('special_2')
             .text
               line-height 16px
               font-size 12px

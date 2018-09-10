@@ -4,7 +4,7 @@
       <ul>
         <li v-for="(item,index) in goods" :key="index" class="menu-item">
           <span class="text border-1px">
-            <span v-show="item.type>0" class="icon" :class="item.type | classMap"></span>{{item.name}}
+            <bg-icon v-show="item.type>0" class="icon" width="12" height="12" flag="3" :type="item.type"></bg-icon>{{item.name}}
           </span>
         </li>
       </ul>
@@ -14,12 +14,16 @@
 </template>
 <script>
 const ERROK=0;
+import bgIcon from "@/components/bgIcon/bgIcon"
 export default {
   name:'goods',
   props:{
     seller:{
       type:Object
     }
+  },
+  components:{
+    bgIcon
   },
   data(){
     return {
@@ -33,25 +37,7 @@ export default {
         this.goods=res.data;
       }
     })
-  },
-  filters:{
-    classMap:function(v){
-      var result="decrease";
-      switch(v){
-        case 1:result="discount";
-          break;
-        case 2:result="special";
-          break;
-        case 3:result="invoice";
-          break;
-        case 4:result="guarantee";
-          break;
-        default:result="decrease";
-          break;
-      }
-      return result;
-    }
-  },
+  }
 }
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
@@ -74,23 +60,7 @@ export default {
       line-height 14px
       padding 0 12px
       .icon
-        display inline-block
-        vertical-align top
-        width 12px
-        height 12px
         margin-right 2px
-        background-size 12px 12px
-        background-repeat no-repeat
-        &.decrease
-          bg-image("decrease_3")
-        &.discount
-          bg-image("discount_3")
-        &.guarantee
-          bg-image("guarantee_3")
-        &.invoice
-          bg-image("invoice_3")
-        &.special
-          bg-image("special_3")
       .text
         display table-cell
         width 56px
