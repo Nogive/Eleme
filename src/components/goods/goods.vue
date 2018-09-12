@@ -29,17 +29,23 @@
                   <span class="now">￥{{food.price}}</span>
                   <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                 </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food" @cart-add="cartAdd"></cartcontrol>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
     </div>
+    <shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
   </div>
 </template>
 <script>
 import BScroll from "better-scroll";
 import bgIcon from "@/components/bgIcon/bgIcon"
+import shopcart from "@/components/shopcart/shopcart"
+import cartcontrol from "@/components/cartcontrol/cartcontrol"
 const ERROK=0;
 export default {
   name:'goods',
@@ -49,7 +55,9 @@ export default {
     }
   },
   components:{
-    bgIcon
+    bgIcon,
+    shopcart,
+    cartcontrol
   },
   data(){
     return {
@@ -68,6 +76,17 @@ export default {
         }
       }
       return 0;
+    },
+    selectFoods(){
+      let foods=[];
+      this.goods.forEach(good=>{
+        good.foods.forEach(food=>{
+          if(food.count){
+            foods.push(food);
+          }
+        })
+      })
+      return foods;
     }
   },
   created(){
@@ -88,6 +107,7 @@ export default {
         click:true
       });
       this.foodScroll=new BScroll(this.$refs.foodsWrapper,{
+        click:true,
         probeType:3//检测实时滚动的坐标
       });
 
@@ -112,7 +132,13 @@ export default {
       let foodList=this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
       let el=foodList[index];
       this.foodScroll.scrollToElement(el,300);
-    }
+    },
+    cartAdd(el){
+      //体验优化，异步执行下落动画
+      this.$nextTick(()=>{
+        this.$refs['shopcart'].drop(el);
+      })
+    },
   }
 }
 </script>
@@ -201,5 +227,9 @@ export default {
             text-decoration line-through
             font-size 10px
             color rgb(147,153,159)
+        .cartcontrol-wrapper
+          position absolute
+          right 0
+          bottom 12px
 </style>
 
