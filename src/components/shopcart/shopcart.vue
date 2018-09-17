@@ -1,31 +1,59 @@
 <template>
-  <div class="shopcart">
-    <div class="content">
-      <div class="content-left">
-        <div class="logo-wrapper">
-          <div class="logo" :class="{'highlight':totalCount>0}">
-            <span class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></span>
+  <div>
+    <div class="shopcart">
+      <div class="content" @click="toggleList">
+        <div class="content-left">
+          <div class="logo-wrapper">
+            <div class="logo" :class="{'highlight':totalCount>0}">
+              <span class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></span>
+            </div>
+            <div class="num" v-show="totalCount>0">{{totalCount}}</div>
           </div>
-          <div class="num" v-show="totalCount>0">{{totalCount}}</div>
+          <div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
+          <div class="desc">另需配送费 ￥{{deliveryPrice}}</div>
         </div>
-        <div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
-        <div class="desc">另需配送费 ￥{{deliveryPrice}}</div>
-      </div>
-      <div class="content-right">
-        <div class="pay" :class="payClass">{{payDesc}}</div>
-      </div>
-    </div>
-    <div class="ball-container">
-      <transition-group name="drop" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
-        <div class="ball" v-for="(ball,index) in balls" :key="index" v-show="ball.show">
-          <div class="inner inner-hook"></div>
+        <div class="content-right" @click.stop="pay">
+          <div class="pay" :class="payClass">{{payDesc}}</div>
         </div>
-      </transition-group>
+      </div>
+      <div class="ball-container">
+        <transition-group name="drop" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter">
+          <div class="ball" v-for="(ball,index) in balls" :key="index" v-show="ball.show">
+            <div class="inner inner-hook"></div>
+          </div>
+        </transition-group>
+      </div>
+      <transition name="fold">
+        <div class="shopcart-list" v-show="listShow">
+          <div class="list-header">
+            <div class="title">购物车</div>
+            <span class="empty" @click="empty()">清空</span>
+          </div>
+          <div class="list-content" ref="listContent">
+            <ul>
+              <li class="food border-1px" v-for="(food,index) in selectFoods" :key="index">
+                <span class="name">{{food.name}}</span>
+                <div class="price">
+                  <span>￥{{food.price*food.count}}</span>
+                </div>
+                <div class="cartcontrol-wrapper">
+                  <cartcontrol :food="food"></cartcontrol>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </transition>
     </div>
+    <transition name="fade">
+      <div class="list-mask" v-show="listShow" @click="hideList"></div>
+    </transition>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
+import BScroll from "better-scroll";
+import cartcontrol from "@/components/cartcontrol/cartcontrol"
 export default {
   props:{
     selectFoods:{
@@ -62,7 +90,8 @@ export default {
           show:false
         }
       ],
-      dropBalls:[]
+      dropBalls:[],
+      fold:true
     }
   },
   computed:{
@@ -96,10 +125,29 @@ export default {
       }else{
         return 'enough'
       }
+    },
+    listShow(){
+      if(!this.totalCount>0){
+        this.fold=true;
+        return false;
+      }
+      let show=!this.fold;
+      if(show){
+        this.$nextTick(()=>{
+          if(!this.scroll){
+            this.scroll=new BScroll(this.$refs['listContent'],{
+              click:true
+            })
+          }else{
+            this.scroll.refresh();
+          }
+        })
+      }
+      return show;
     }
   },
   components: {
-
+    cartcontrol
   },
   methods:{
     drop(el){
@@ -146,6 +194,26 @@ export default {
         ball.show=false;
         el.style.display='none';
       }
+    },
+    toggleList(){
+      if(!this.totalCount){
+        return;
+      }
+      this.fold=!this.fold;
+    },
+    empty(){
+      this.selectFoods.forEach(food=>{
+        food.count=0;
+      })
+    },
+    hideList(){
+      this.fold=true;
+    },
+    pay(){
+      if(this.totalPrice<this.minPrice){
+        return;
+      }
+      alert('去支付')
     }
   }
 }
@@ -252,4 +320,70 @@ export default {
         border-radius 50%
         background-color rgb(0,160,220)
         transition all .4s linear
+  .shopcart-list
+    position absolute
+    top 0
+    left 0
+    z-index -1
+    width 100%
+    transform: translate3d(0,-100%,0);
+    &.fold-enter-active,&.fold-leave-active
+      transition transform .5s
+    &.fold-enter,&.fold-leave-to
+      transform translate3d(0,0,0)
+    .list-header
+      height 40px
+      line-height 40px
+      padding 0 18px 
+      background-color #f3f5f7
+      border-bottom 1px solid rgba(7,17,27,.1);
+      .title
+        float left
+        font-size 14px
+        color rgb(7,17,27)
+      .empty
+        float right 
+        font-size 12px
+        color rgb(0,160,260)
+    .list-content
+      padding 0 18px
+      max-height 217px
+      background-color #fff
+      overflow hidden
+      .food
+        position relative
+        padding 12px 0 
+        box-sizing border-box
+        border-1px(rgba(7,17,27,.1))
+        .name
+          line-height 24px
+          font-size 14px
+          color rgb(7,17,27)
+        .price
+          position absolute
+          right 90px
+          bottom 12px
+          line-height 24px
+          font-size 14px
+          font-weight 700
+          color rgb(240,20,20)
+        .cartcontrol-wrapper
+          position absolute
+          right 0
+          bottom 6px
+.list-mask
+  position fixed
+  top 0
+  left 0
+  width 100%
+  height 100%
+  z-index 40
+  -webkit-backdrop-filter blur(10px)
+  background rgba(7,17,27,.6)
+  &.fade-enter-active,&.fade-leave-active
+    transition all .5s
+  &.fade-enter-active,&.fade-enter-to
+    opacity 1
+  &.fade-leave-active,&.fade-laeve-to
+    opacity 0
 </style>
