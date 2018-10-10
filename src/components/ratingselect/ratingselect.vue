@@ -1,17 +1,17 @@
 <template>
   <div class="ratingselect">
     <div class="rating-type border-1px">
-      <span class="block positive" :class="{'active':selectType===2}">{{desc.all}}
-        <span class="count">47</span>
+      <span @click="select(2,$event)" class="block positive" :class="{'active':ratingInfo.selectType===2}">{{ratingInfo.desc.all}}
+        <span class="count">{{ratings.length}}</span>
       </span>
-      <span class="block positive" :class="{'active':selectType===0}">{{desc.positive}}
-        <span class="count">50</span>
+      <span  @click="select(0,$event)" class="block positive" :class="{'active':ratingInfo.selectType===0}">{{ratingInfo.desc.positive}}
+        <span class="count">{{positives.length}}</span>
       </span>
-      <span class="block negative" :class="{'active':selectType===1}">{{desc.negative}}
-        <span class="count">20</span>
+      <span  @click="select(1,$event)" class="block negative" :class="{'active':ratingInfo.selectType===1}">{{ratingInfo.desc.negative}}
+        <span class="count">{{negatives.length}}</span>
       </span>
     </div>
-    <div class="switch" :class="{'on':onlyContent}">
+    <div @click="toggleContent($event)" class="switch" :class="{'on':ratingInfo.onlyContent}">
       <i class="icon-check_circle"></i>
       <span class="text">只看有内容的评价</span>
     </div>
@@ -25,36 +25,69 @@ const ALL=2;
 
 export default {
   props:{
-    rating:{
+    ratings:{
       type:Array,
       default(){
         return [];
       }
     },
-    selectType:{
-      type:Number,
-      default:ALL
-    },
-    onlyContent:{
-      type:Boolean,
-      default:false
-    },
-    desc:{
+    ratingInfo:{
       type:Object,
-      default(){
-        return {
-           all:'全部',
-           positive:'满意',
-           negative:'不满意' 
+      default:{
+        selectType:{
+          type:Number,
+          default:ALL
+        },
+        onlyContent:{
+          type:Boolean,
+          default:false
+        },
+        desc:{
+          type:Object,
+          default(){
+            return {
+              all:'全部',
+              positive:'满意',
+              negative:'不满意' 
+            }
+          }
         }
       }
     }
   },
   data() {
     return {
-
+      
     }
   },
+  computed:{
+    positives(){
+      return this.ratings.filter((rating)=>{
+        return rating.rateType===POSITIVE;
+      })
+    },
+    negatives(){
+      return this.ratings.filter((rating)=>{
+        return rating.rateType===NEGATIVE;
+      })
+    }
+  },
+  methods:{
+    select(type,event){
+      if(!event._constructed){
+        return;
+      }
+      this.ratingInfo.selectType=type;
+      this.$emit('getRatingType',type);
+    },
+    toggleContent(event){
+      if(!event._constructed){
+        return;
+      }
+      this.ratingInfo.onlyContent=!this.ratingInfo.onlyContent;
+      this.$emit('showContent',this.ratingInfo.onlyContent);
+    }
+  }
 }
 </script>
 
