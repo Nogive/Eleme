@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import {urlParse} from "@/common/js/util"
 import mmheader from "./components/header/Header.vue"
 const ERR_OK=0;
 export default {
@@ -26,7 +27,13 @@ export default {
   },
   data(){
     return {
-      seller:{}
+      seller:{
+        id:(()=>{
+          let queryParam=urlParse();
+          console.log(queryParam);
+          return queryParam.id; 
+        })()
+      }
     }
   },
   created(){

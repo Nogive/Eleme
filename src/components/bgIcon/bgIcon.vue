@@ -88,6 +88,10 @@ export default {
       bg-image('discount_4')
     &.guarantee_4
       bg-image('guarantee_4')
+    &.invoice_4
+      bg-image('invoice_4')
+    &.special_4
+      bg-image('special_4')
     &.brand
       bg-image('brand')
     &.bulletin
