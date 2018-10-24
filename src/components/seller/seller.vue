@@ -69,6 +69,7 @@
 </template>
 <script>
 import BScroll from "better-scroll";
+import{saveToLocal,loadFromLocal} from "@/common/js/store"
 import star from "@/components/star/star"
 import split from "@/components/split/split"
 import bgIcon from "@/components/bgIcon/bgIcon"
@@ -81,7 +82,9 @@ export default {
   },
   data(){
     return{
-      favorite:false,
+      favorite:(()=>{
+        return loadFromLocal('123456','favorite',false);
+      })()
     }
   },
   computed:{
@@ -137,6 +140,8 @@ export default {
         return;
       }
       this.favorite=!this.favorite;
+      this.seller.id="123456";
+      saveToLocal(this.seller.id,'favorite',this.favorite);
     }
   }
 }

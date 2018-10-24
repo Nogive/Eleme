@@ -4,13 +4,12 @@
  * @return Object {id:12345,a:b}
  */
 export function urlParse(){
-    let url=window.location.search;
+    let url=window.location.href;
+    //let url="http://localhost:8080/#/goods?id=2345&a:b"
     let obj={};
-    console.log(url);
     let reg=/[?&][^?&]+=[^?&]+/g; //[^?&]:匹配 非 ？号和&符号
     let arr=url.match(reg);
     //['?id=12345','&a=b']
-    console.log(arr);
     if(arr){
         arr.forEach(item=>{
             let tempArr=item.substring(1).split('=');
